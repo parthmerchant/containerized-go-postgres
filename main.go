@@ -13,9 +13,6 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-```
-Specify Go Object Relational Mapper (GORM) structs
-```
 // List ORM struct
 type List struct {
 
@@ -38,12 +35,7 @@ type Item struct {
 	ListID		int
 }
 
-
-```
-Data to insert into DB
-```
-var db *gorm.db
-
+var db *gorm.DB
 var err error
 
 var (
@@ -51,9 +43,8 @@ var (
 	lists = []List{
 		{ListID: 1, Title: "Grocery", Info: "Get from Trader Joes"},
 		{ListID: 2, Title: "Expenses", Info: "Pay by end of the month"},
-		{ListID: 3, Title: "Guestlist", Info: "Guestlist for bday party"}
+		{ListID: 3, Title: "Guestlist", Info: "Guestlist for bday party"},
 	}
-
 	items = []Item{
 		{Text: "Avocados", Done: true, ListID: 1},
 		{Text: "Kale", Done: false, ListID: 1},
@@ -66,9 +57,7 @@ var (
 	}
 )
 
-```
-Handling incoming HTTP requests 
-```
+
 func main() {
 
 	router := mux.NewRouter()
@@ -102,9 +91,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", handler))
 }
 
-```
-API Logic Functions
-```
+
 func GetItems(w http.ResponseWriter, r *http.Request) {
 	var items []Item
 	db.Find(&items)
@@ -127,10 +114,10 @@ func GetList(w http.ResponseWriter, r *http.Request) {
 
 	list.Items = items
 	
-	json.NewEncoder(w).Encode(&driver)
+	json.NewEncoder(w).Encode(&list)
 }
 
-func DeleteItem(w https:ResponseWriter, r *http.Request) {
+func DeleteItem(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
   	var item Item
   	db.First(&item, params["id"])

@@ -82,7 +82,6 @@ func main() {
 	}
   
 	router.HandleFunc("/items", GetItems).Methods("GET")
-	router.HandleFunc("/items/{id}", GetItem).Methods("GET")
 	router.HandleFunc("/lists/{id}", GetList).Methods("GET")
 	router.HandleFunc("/items/{id}", DeleteItem).Methods("DELETE")
   
@@ -98,19 +97,13 @@ func GetItems(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&items)
 }
 
-func GetItem(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	var item Item
-	db.First(&item, params["id"])
-}
-
 func GetList(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	var list List
 	var items []Item
 
-	db.First(&list, params["id"])
-	db.Model(&list).Related(&items)
+	db.Find(&list, params["id"])
+	db.Where("list_id = ?", list.ListID).Find(&items)
 
 	list.Items = items
 	
@@ -120,7 +113,7 @@ func GetList(w http.ResponseWriter, r *http.Request) {
 func DeleteItem(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
   	var item Item
-  	db.First(&item, params["id"])
+  	db.Find(&item, params["id"])
   	db.Delete(&item)
 
   	var items []Item

@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"github.com/rs/cors"
-	
+
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
@@ -103,7 +103,7 @@ func main() {
 }
 
 ```
-Functions
+API Logic Functions
 ```
 func GetItems(w http.ResponseWriter, r *http.Request) {
 	var items []Item

@@ -1,4 +1,4 @@
-module list_and_items_app/main
+module list-items-app
 
 go 1.17
 

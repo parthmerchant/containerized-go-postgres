@@ -2,13 +2,11 @@ package main
 
 // Import packages
 import (
-	"encoding/json"
-	"log"
 	"net/http"
   
-	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"github.com/rs/cors"
+	"github.com/labstack/echo/v4"
 
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
@@ -31,7 +29,6 @@ type Item struct {
 	gorm.Model
   
 	Text		string
-	Done 		bool
 	ListID		int
 }
 
@@ -46,21 +43,21 @@ var (
 		{ListID: 3, Title: "Guestlist", Info: "Guestlist for bday party"},
 	}
 	items = []Item{
-		{Text: "Avocados", Done: true, ListID: 1},
-		{Text: "Kale", Done: false, ListID: 1},
-		{Text: "Phone Bill", Done: false, ListID: 2},
-		{Text: "Internet", Done: true, ListID: 2},
-		{Text: "Dan", Done: false, ListID: 3},
-		{Text: "Chris", Done: true, ListID: 3},
-		{Text: "Marc", Done: true, ListID: 3},
-		{Text: "Linda", Done: false, ListID: 3},
+		{Text: "Avocados", ListID: 1},
+		{Text: "Kale", ListID: 1},
+		{Text: "Phone Bill", ListID: 2},
+		{Text: "Internet", ListID: 2},
+		{Text: "Dan", ListID: 3},
+		{Text: "Chris", ListID: 3},
+		{Text: "Marc", ListID: 3},
+		{Text: "Linda", ListID: 3},
 	}
 )
 
 
 func main() {
 
-	router := mux.NewRouter()
+	e := echo.New()
   
 	db, err = gorm.Open( "postgres", "host=db port=5432 user=postgres dbname=postgres sslmode=disable password=postgres")
   
@@ -80,43 +77,44 @@ func main() {
 	for index := range lists {
 		db.Create(&lists[index])
 	}
+
+	e.GET("/items", GetItems)
+	e.GET("/lists/:id", GetList)
+	e.DELETE("/items/:id", DeleteItem)
   
-	router.HandleFunc("/items", GetItems).Methods("GET")
-	router.HandleFunc("/lists/{id}", GetList).Methods("GET")
-	router.HandleFunc("/items/{id}", DeleteItem).Methods("DELETE")
+	handler := cors.Default().Handler(e)
   
-	handler := cors.Default().Handler(router)
-  
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	e.Logger.Fatal(http.ListenAndServe(":8080", handler))
 }
 
 
-func GetItems(w http.ResponseWriter, r *http.Request) {
+func GetItems(c echo.Context) error {
 	var items []Item
 	db.Find(&items)
-	json.NewEncoder(w).Encode(&items)
+	return c.JSON(http.StatusOK, &items)
 }
 
-func GetList(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
+func GetList(c echo.Context) error {
 	var list List
 	var items []Item
 
-	db.Find(&list, params["id"])
+	id := c.Param("id")
+
+	db.Find(&list, id)
 	db.Where("list_id = ?", list.ListID).Find(&items)
 
 	list.Items = items
 	
-	json.NewEncoder(w).Encode(&list)
+	return c.JSON(http.StatusOK, &list)
 }
 
-func DeleteItem(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-  	var item Item
-  	db.Find(&item, params["id"])
-  	db.Delete(&item)
+func DeleteItem(c echo.Context) error {
+	var item Item
+	id := c.Param("id")
+	db.Find(&item, id)
+	db.Delete(&item)
 
-  	var items []Item
-  	db.Find(&items)
-  	json.NewEncoder(w).Encode(&items)
+	var items []Item
+	db.Find(&items)
+	return c.JSON(http.StatusOK, &items)
 }

@@ -16,7 +16,6 @@ docker compose up
 There are currently 4 REST API endpoints:
 ```
 GET /items
-GET /items/{id}
 GET /lists/{id}
 DELETE /items/{id}
 ```

@@ -19,3 +19,20 @@ GET /items
 GET /lists/{id}
 DELETE /items/{id}
 ```
+
+If you want to hit these endpoints, use the following `curl` commands to perform the aforementioned GET and DELETE: 
+
+1. `GET /items`
+```
+curl -X GET localhost:8080/items
+```
+
+2. `GET /lists/{id}`
+```
+curl -X GET localhost:8080/lists/{id}
+```
+
+3. `DELETE /items/{id}
+```
+curl -X DELETE localhost:8080/items/{id}
+```

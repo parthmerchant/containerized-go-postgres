@@ -13,7 +13,7 @@ docker compose up
 
 ## Usage 
 
-There are currently 4 REST API endpoints:
+There are currently 3 REST API endpoints:
 ```
 GET /items
 GET /lists/{id}

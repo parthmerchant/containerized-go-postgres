@@ -32,7 +32,7 @@ curl -X GET localhost:8080/items
 curl -X GET localhost:8080/lists/{id}
 ```
 
-3. `DELETE /items/{id}
+3. `DELETE /items/{id}`
 ```
 curl -X DELETE localhost:8080/items/{id}
 ```

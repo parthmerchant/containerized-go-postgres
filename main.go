@@ -3,6 +3,7 @@ package main
 // Import packages
 import (
 	"net/http"
+	"strconv"
   
 	"github.com/jinzhu/gorm"
 	"github.com/rs/cors"
@@ -80,6 +81,10 @@ func main() {
 
 	e.GET("/items", GetItems)
 	e.GET("/lists/:id", GetList)
+
+	e.POST("/items", CreateItem)
+	e.POST("/lists", CreateList)
+
 	e.DELETE("/items/:id", DeleteItem)
   
 	handler := cors.Default().Handler(e)
@@ -105,6 +110,24 @@ func GetList(c echo.Context) error {
 
 	list.Items = items
 	
+	return c.JSON(http.StatusOK, &list)
+}
+
+func CreateItem(c echo.Context) error {
+	listid, _ := strconv.Atoi(c.QueryParam("listid"))
+	text := c.QueryParam("text")
+	item := Item{Text: text, ListID: listid}
+	db.Create(&item)
+	return c.JSON(http.StatusOK, &item)
+}
+
+func CreateList(c echo.Context) error {
+	listid, _ := strconv.Atoi(c.QueryParam("listid"))
+	title := c.QueryParam("title")
+	info := c.QueryParam("info")
+	
+	list := List{ListID: listid, Title: title, Info: info}
+	db.Create(&list)
 	return c.JSON(http.StatusOK, &list)
 }
 

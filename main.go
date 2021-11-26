@@ -87,6 +87,7 @@ func main() {
 	e.POST("/lists", CreateList)
 
 	e.DELETE("/items/:id", DeleteItem)
+	e.DELETE("/lists/:id", DeleteList)
   
 	handler := cors.Default().Handler(e)
   
@@ -150,6 +151,7 @@ func CreateList(c echo.Context) error {
 	return c.JSON(http.StatusOK, &list)
 }
 
+// 
 func DeleteItem(c echo.Context) error {
 	var item Item
 	id := c.Param("id")
@@ -159,4 +161,17 @@ func DeleteItem(c echo.Context) error {
 	var items []Item
 	db.Find(&items)
 	return c.JSON(http.StatusOK, &items)
+}
+
+// Delete List and all associated Items
+// given listid 
+func DeleteList(c echo.Context) error {
+	var list List
+	var items []Item
+	id := c.Param("id")
+	db.Find(&list, id)
+	db.Delete(&list)
+
+	db.Where("list_id = ?", id).Delete(&items)
+	return c.JSON(http.StatusOK, "Deleted List")
 }

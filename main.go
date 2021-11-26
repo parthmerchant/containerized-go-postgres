@@ -81,6 +81,7 @@ func main() {
 
 	e.GET("/items", GetItems)
 	e.GET("/lists/:id", GetList)
+	e.GET("/lists", GetLists)
 
 	e.POST("/items", CreateItem)
 	e.POST("/lists", CreateList)
@@ -111,6 +112,24 @@ func GetList(c echo.Context) error {
 	list.Items = items
 	
 	return c.JSON(http.StatusOK, &list)
+}
+
+func GetLists(c echo.Context) error {
+	var lists []List
+	var response_list []List
+	db.Find(&lists)
+	
+	for i := 0; i < len(lists); i++ {
+		var items []Item
+		var list List
+		id := lists[i].ListID
+		db.Find(&list, id)
+		db.Where("list_id = ?", list.ListID).Find(&items)
+		list.Items = items
+		response_list = append(response_list, list)
+	}
+	
+	return c.JSON(http.StatusOK, &response_list)
 }
 
 func CreateItem(c echo.Context) error {

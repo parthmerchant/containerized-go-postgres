@@ -2,7 +2,7 @@
 --------------------------------------
 Go, PostgreSQL, Docker
 
-A simple REST endpoint for querying and modifying lists and their items.
+A simple REST endpoint for querying and modifying lists and list items.
 
 
 ## Setup
